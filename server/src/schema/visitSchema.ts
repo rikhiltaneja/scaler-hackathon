@@ -1,28 +1,29 @@
-// Shared schema describing a structured ASHA home-visit record.
-// Used both to shape the LLM's structured extraction (as an Anthropic
-// tool definition) and as the single source of truth for default/empty
-// values on the server.
+// Server-only piece of the Visit schema: the Anthropic tool-use
+// definition used to force structured extraction. The actual Visit
+// model shape (field names/types) lives in the shared package so
+// client and server don't each define it separately.
 
-export const VISIT_TYPES = ['ANC', 'PNC', 'Newborn Care', 'Immunization', 'General'];
+import type { Tool } from '@anthropic-ai/sdk/resources/messages';
+import { Visit, VISIT_TYPES } from 'shared';
 
-export const EMPTY_VISIT = {
-  patientName: '',
-  visitType: '',
-  vitals: {
-    bloodPressureSystolic: null,
-    bloodPressureDiastolic: null,
-    weightKg: null,
-    temperatureC: null,
-  },
-  symptoms: [],
-  medicationsGiven: [],
-  nextFollowUpDate: null,
-  notes: '',
-};
+// The Visit class requires every field — deciding what "empty" means is
+// an application-level concern, so that default instance is built here
+// on the server rather than baked into the shared model itself.
+export function createEmptyVisit(): Visit {
+  return new Visit({
+    patientName: '',
+    visitType: '',
+    vitals: { weightKg: null, temperatureC: null },
+    symptoms: [],
+    medicationsGiven: [],
+    nextFollowUpDate: null,
+    notes: '',
+  });
+}
 
 // Anthropic tool-use schema: forcing the model to call this tool is what
 // guarantees a parseable structured response instead of free text.
-export const VISIT_SCHEMA_TOOL = {
+export const VISIT_SCHEMA_TOOL: Tool = {
   name: 'record_visit',
   description:
     'Record structured details of an ASHA worker home visit, extracted from a spoken transcript.',
@@ -42,8 +43,6 @@ export const VISIT_SCHEMA_TOOL = {
         type: 'object',
         description: 'Only include values explicitly mentioned. Omit a field entirely if not stated.',
         properties: {
-          bloodPressureSystolic: { type: 'number', description: 'Systolic BP, e.g. 120' },
-          bloodPressureDiastolic: { type: 'number', description: 'Diastolic BP, e.g. 80' },
           weightKg: { type: 'number', description: 'Weight in kilograms' },
           temperatureC: { type: 'number', description: 'Body temperature in Celsius' },
         },

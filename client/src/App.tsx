@@ -3,9 +3,10 @@ import VoiceNoteInput from './components/VoiceNoteInput';
 import VisitForm from './components/VisitForm';
 import VisitHistory from './components/VisitHistory';
 import { extractVisit, submitVisit } from './api/visits';
+import type { AppStatus, ExtractedVisit, Language } from './types';
 import './App.css';
 
-const LANGUAGES = [
+const LANGUAGES: Language[] = [
   { code: 'en-IN', label: 'English' },
   { code: 'hi-IN', label: 'हिन्दी (Hindi)' },
 ];
@@ -13,9 +14,9 @@ const LANGUAGES = [
 export default function App() {
   const [transcript, setTranscript] = useState('');
   const [language, setLanguage] = useState(LANGUAGES[0].code);
-  const [extracted, setExtracted] = useState(null);
+  const [extracted, setExtracted] = useState<ExtractedVisit | null>(null);
   const [mockMode, setMockMode] = useState(false);
-  const [status, setStatus] = useState('idle'); // idle | extracting | review | submitting
+  const [status, setStatus] = useState<AppStatus>('idle');
   const [error, setError] = useState('');
   const [historyVersion, setHistoryVersion] = useState(0);
 
@@ -29,12 +30,13 @@ export default function App() {
       setExtracted(result);
       setStatus('review');
     } catch (err) {
-      setError(err.message);
+      setError(err instanceof Error ? err.message : String(err));
       setStatus('idle');
     }
   }
 
   async function handleSubmit() {
+    if (!extracted) return;
     setStatus('submitting');
     setError('');
     try {
@@ -44,7 +46,7 @@ export default function App() {
       setHistoryVersion((v) => v + 1);
       setStatus('idle');
     } catch (err) {
-      setError(err.message);
+      setError(err instanceof Error ? err.message : String(err));
       setStatus('review');
     }
   }

@@ -1,13 +1,28 @@
+import { VISIT_TYPES, type Vitals } from 'shared';
+import type { ChangeEvent } from 'react';
+import type { ExtractedVisit } from '../types';
 import TagInput from './TagInput';
 
-const VISIT_TYPES = ['ANC', 'PNC', 'Newborn Care', 'Immunization', 'General'];
+interface VisitFormProps {
+  data: ExtractedVisit;
+  onChange: (data: ExtractedVisit) => void;
+  submitting: boolean;
+  onSubmit: () => void;
+  onEditAgain: () => void;
+}
 
-export default function VisitForm({ data, onChange, submitting, onSubmit, onEditAgain }) {
-  function update(field, val) {
+export default function VisitForm({
+  data,
+  onChange,
+  submitting,
+  onSubmit,
+  onEditAgain,
+}: VisitFormProps) {
+  function update<K extends keyof ExtractedVisit>(field: K, val: ExtractedVisit[K]) {
     onChange({ ...data, [field]: val });
   }
 
-  function updateVital(field, val) {
+  function updateVital(field: keyof Vitals, val: string) {
     onChange({
       ...data,
       vitals: { ...data.vitals, [field]: val === '' ? null : Number(val) },
@@ -16,28 +31,23 @@ export default function VisitForm({ data, onChange, submitting, onSubmit, onEdit
 
   return (
     <div className="visit-form">
-      {data.riskFlags?.length > 0 && (
-        <div className="risk-banner">
-          {data.riskFlags.map((flag, i) => (
-            <span className="risk-flag" key={i}>
-              ⚠ {flag}
-            </span>
-          ))}
-        </div>
-      )}
-
       <div className="field-grid">
         <label className="field">
           Patient name
           <input
             value={data.patientName}
-            onChange={(e) => update('patientName', e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => update('patientName', e.target.value)}
           />
         </label>
 
         <label className="field">
           Visit type
-          <select value={data.visitType} onChange={(e) => update('visitType', e.target.value)}>
+          <select
+            value={data.visitType}
+            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+              update('visitType', e.target.value as ExtractedVisit['visitType'])
+            }
+          >
             <option value="">Select…</option>
             {VISIT_TYPES.map((t) => (
               <option key={t} value={t}>
@@ -48,29 +58,11 @@ export default function VisitForm({ data, onChange, submitting, onSubmit, onEdit
         </label>
 
         <label className="field">
-          BP systolic
-          <input
-            type="number"
-            value={data.vitals.bloodPressureSystolic ?? ''}
-            onChange={(e) => updateVital('bloodPressureSystolic', e.target.value)}
-          />
-        </label>
-
-        <label className="field">
-          BP diastolic
-          <input
-            type="number"
-            value={data.vitals.bloodPressureDiastolic ?? ''}
-            onChange={(e) => updateVital('bloodPressureDiastolic', e.target.value)}
-          />
-        </label>
-
-        <label className="field">
           Weight (kg)
           <input
             type="number"
             value={data.vitals.weightKg ?? ''}
-            onChange={(e) => updateVital('weightKg', e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => updateVital('weightKg', e.target.value)}
           />
         </label>
 
@@ -79,7 +71,9 @@ export default function VisitForm({ data, onChange, submitting, onSubmit, onEdit
           <input
             type="number"
             value={data.vitals.temperatureC ?? ''}
-            onChange={(e) => updateVital('temperatureC', e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              updateVital('temperatureC', e.target.value)
+            }
           />
         </label>
 
@@ -88,7 +82,9 @@ export default function VisitForm({ data, onChange, submitting, onSubmit, onEdit
           <input
             type="date"
             value={data.nextFollowUpDate ?? ''}
-            onChange={(e) => update('nextFollowUpDate', e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              update('nextFollowUpDate', e.target.value)
+            }
           />
         </label>
       </div>
@@ -111,7 +107,7 @@ export default function VisitForm({ data, onChange, submitting, onSubmit, onEdit
         <textarea
           rows={3}
           value={data.notes || ''}
-          onChange={(e) => update('notes', e.target.value)}
+          onChange={(e: ChangeEvent<HTMLTextAreaElement>) => update('notes', e.target.value)}
         />
       </label>
 

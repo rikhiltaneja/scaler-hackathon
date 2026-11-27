@@ -22,9 +22,13 @@ The transcript box is a plain, standard text field, filled in one of two ways:
 
 1. **Built-in mic button** — browser `SpeechRecognition` (Web Speech API), works
    standalone with no setup, good fallback for any device/browser that supports it.
+   **Use Google Chrome for this** — Arc, Brave, and most other Chromium-based browsers
+   omit the API key Google's cloud speech backend requires, so the mic button fails
+   there with a `network` error every time, regardless of connectivity. The app surfaces
+   this in the UI and points the user to option 2 below when it happens.
 2. **Any external dictation tool** — Wispr Flow, OS-level voice typing (Windows, macOS,
    Android/Gboard), etc. Since the box is a normal textarea, these tools can type into it
-   directly — no integration needed on our side.
+   directly — no integration needed on our side, and it works in any browser.
 
 Either way, the same transcript flows into the same pipeline: **transcript → LLM
 structured extraction → editable auto-filled form → rule-based risk flags → confirm &

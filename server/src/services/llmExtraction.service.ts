@@ -1,5 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { EMPTY_VISIT, VISIT_SCHEMA_TOOL } from '../schema/visitSchema.js';
+import type { VisitFields, Vitals } from 'shared';
+import { createEmptyVisit, VISIT_SCHEMA_TOOL } from '../schema/visitSchema.js';
+
+export type ExtractedVisit = VisitFields & { mockMode?: boolean };
 
 const apiKey = process.env.ANTHROPIC_API_KEY;
 const model = process.env.ANTHROPIC_MODEL || 'claude-sonnet-5';
@@ -15,7 +18,10 @@ const client = apiKey ? new Anthropic({ apiKey }) : null;
  * ANTHROPIC_API_KEY is configured, so the rest of the app is testable
  * without a key.
  */
-export async function extractStructuredVisit(transcript, { language = 'en' } = {}) {
+export async function extractStructuredVisit(
+  transcript: string,
+  { language = 'en' }: { language?: string } = {},
+): Promise<ExtractedVisit> {
   if (!client) {
     return mockExtract(transcript);
   }
@@ -40,27 +46,30 @@ export async function extractStructuredVisit(transcript, { language = 'en' } = {
   });
 
   const toolUse = message.content.find((block) => block.type === 'tool_use');
-  if (!toolUse) {
+  if (!toolUse || toolUse.type !== 'tool_use') {
     return mockExtract(transcript);
   }
 
-  return mergeWithDefaults(toolUse.input);
+  // The model's tool call input is only known at runtime — it's shaped by
+  // VISIT_SCHEMA_TOOL but not statically typed by the SDK.
+  return mergeWithDefaults(toolUse.input as Partial<VisitFields>);
 }
 
-function mergeWithDefaults(partial) {
+function mergeWithDefaults(partial: Partial<VisitFields>): ExtractedVisit {
+  const empty = createEmptyVisit();
   return {
-    ...EMPTY_VISIT,
+    ...empty,
     ...partial,
     vitals: {
-      ...EMPTY_VISIT.vitals,
-      ...(partial.vitals || {}),
+      ...empty.vitals,
+      ...(partial.vitals as Partial<Vitals> | undefined),
     },
   };
 }
 
-function mockExtract(transcript) {
+function mockExtract(transcript: string): ExtractedVisit {
   return {
-    ...EMPTY_VISIT,
+    ...createEmptyVisit(),
     notes: transcript,
     mockMode: true,
   };

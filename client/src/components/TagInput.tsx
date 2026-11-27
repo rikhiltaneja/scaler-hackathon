@@ -1,8 +1,15 @@
-import { useState } from 'react';
+import { useState, type KeyboardEvent } from 'react';
+
+interface TagInputProps {
+  label: string;
+  values: string[];
+  onChange: (values: string[]) => void;
+  placeholder?: string;
+}
 
 // Small chip-style input for array fields (symptoms, medications) that
 // also works fine if the values arrive already-populated from the LLM.
-export default function TagInput({ label, values, onChange, placeholder }) {
+export default function TagInput({ label, values, onChange, placeholder }: TagInputProps) {
   const [draft, setDraft] = useState('');
 
   function addTag() {
@@ -13,7 +20,7 @@ export default function TagInput({ label, values, onChange, placeholder }) {
     setDraft('');
   }
 
-  function handleKeyDown(e) {
+  function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault();
       addTag();
@@ -22,7 +29,7 @@ export default function TagInput({ label, values, onChange, placeholder }) {
     }
   }
 
-  function removeTag(index) {
+  function removeTag(index: number) {
     onChange(values.filter((_, i) => i !== index));
   }
 
