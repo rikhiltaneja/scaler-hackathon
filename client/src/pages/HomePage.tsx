@@ -2,7 +2,9 @@ import { useState } from 'react';
 import VoiceNoteInput from '../components/VoiceNoteInput';
 import VisitForm from '../components/VisitForm';
 import VisitHistory from '../components/VisitHistory';
+import Modal from '../components/Modal';
 import { extractVisit, submitVisit } from '../api/visits';
+import { getCurrentLocation } from '../utils/geolocation';
 import type { AppStatus, ExtractedVisit, Language } from '../types';
 
 const LANGUAGES: Language[] = [
@@ -17,19 +19,20 @@ export default function HomePage() {
   const [mockMode, setMockMode] = useState(false);
   const [status, setStatus] = useState<AppStatus>('idle');
   const [error, setError] = useState('');
+  const [generateError, setGenerateError] = useState('');
   const [historyVersion, setHistoryVersion] = useState(0);
 
   async function handleFillForm() {
     if (!transcript.trim()) return;
     setStatus('extracting');
-    setError('');
+    setGenerateError('');
     try {
       const { extracted: result } = await extractVisit(transcript, language);
       setMockMode(Boolean(result.mockMode));
       setExtracted(result);
       setStatus('review');
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setGenerateError(err instanceof Error ? err.message : String(err));
       setStatus('idle');
     }
   }
@@ -39,7 +42,11 @@ export default function HomePage() {
     setStatus('submitting');
     setError('');
     try {
-      await submitVisit({ transcript, language, extracted });
+      // Only fetched here, at save time — never sent to /extract, so it
+      // never reaches the LLM. Permission denied/unavailable just means
+      // the visit saves without a location, not a blocked submission.
+      const location = await getCurrentLocation();
+      await submitVisit({ transcript, language, location, extracted });
       setTranscript('');
       setExtracted(null);
       setHistoryVersion((v) => v + 1);
@@ -78,6 +85,23 @@ export default function HomePage() {
         {error && <p className="error">{error}</p>}
       </section>
 
+      {status === 'extracting' && (
+        <Modal>
+          <div className="modal-spinner" aria-hidden="true" />
+          <p>Generating visit from your recording…</p>
+        </Modal>
+      )}
+
+      {generateError && (
+        <Modal onClose={() => setGenerateError('')}>
+          <h3>Couldn't generate the visit</h3>
+          <p className="error">{generateError}</p>
+          <button type="button" className="primary-btn" onClick={() => setGenerateError('')}>
+            Close
+          </button>
+        </Modal>
+      )}
+
       {extracted && (
         <section className="panel">
           <h2>2. Review &amp; confirm</h2>
@@ -88,6 +112,7 @@ export default function HomePage() {
               <code>server/.env</code> to enable real auto-fill.
             </p>
           )}
+          {extracted.completenessTip && <p className="notice">💡 {extracted.completenessTip}</p>}
           <VisitForm
             data={extracted}
             onChange={setExtracted}

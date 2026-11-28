@@ -25,7 +25,7 @@ export default function VisitDetailPage() {
 
   return (
     <section className="panel">
-      <Link to="/" className="back-link">
+      <Link to="/" className="link back-link">
         ← Back to visits
       </Link>
 
@@ -38,6 +38,8 @@ export default function VisitDetailPage() {
           <p className="muted">
             {visit.visitType || '—'} · {new Date(visit.createdAt).toLocaleString()}
           </p>
+
+          {visit.completenessTip && <p className="notice">💡 {visit.completenessTip}</p>}
 
           <div className="field-grid">
             <div className="field">
@@ -55,6 +57,23 @@ export default function VisitDetailPage() {
             <div className="field">
               Language
               <div className="field-value">{visit.language ?? '—'}</div>
+            </div>
+            <div className="field">
+              Location
+              <div className="field-value">
+                {visit.location ? (
+                  <a
+                    href={`https://www.google.com/maps?q=${visit.location.latitude},${visit.location.longitude}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="link"
+                  >
+                    {visit.location.latitude.toFixed(5)}, {visit.location.longitude.toFixed(5)}
+                  </a>
+                ) : (
+                  '—'
+                )}
+              </div>
             </div>
           </div>
 

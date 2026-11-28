@@ -37,17 +37,20 @@
   font-size: 1.05rem;
 }
 
-.back-link {
+.link {
   display: inline-block;
-  margin-bottom: 14px;
   color: var(--primary);
   font-size: 0.85rem;
   font-weight: 600;
   text-decoration: none;
 }
 
-.back-link:hover {
+.link:hover {
   text-decoration: underline;
+}
+
+.back-link {
+  margin-bottom: 14px;
 }
 
 /* Voice input */
@@ -286,6 +289,53 @@
   flex-wrap: wrap;
   gap: 6px;
   margin-bottom: 6px;
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 50;
+}
+
+.modal-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+}
+
+.modal-box h3 {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+}
+
+.modal-box p {
+  margin: 0;
+}
+
+.modal-spinner {
+  width: 32px;
+  height: 32px;
+  margin: 0 auto 14px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: modal-spin 0.8s linear infinite;
+}
+
+@keyframes modal-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 480px) {
