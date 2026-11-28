@@ -37,3 +37,7 @@ export function submitVisit(payload: {
 export function fetchVisits(): Promise<VisitRecord[]> {
   return fetch(BASE).then((res) => handle(res));
 }
+
+export function fetchVisit(id: string): Promise<VisitRecord> {
+  return fetch(`${BASE}/${id}`).then((res) => handle(res));
+}

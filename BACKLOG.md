@@ -6,8 +6,8 @@ Deferred items, roughly in priority order.
   back to the ASHA worker so she can confirm by ear instead of reading a screen (useful
   for low-literacy users and noisy/low-light field conditions). Candidate: Web Speech
   API `SpeechSynthesis` on the client, same pattern as the STT fallback already in place.
-- **Wire a real `ANTHROPIC_API_KEY`** — pipeline currently runs in mock mode (echoes
-  transcript into Notes, no auto-fill) until a key is added to `server/.env`.
+- **Wire a real `GEMINI_API_KEY`** — pipeline currently runs in mock mode (sample data,
+  with the transcript in Notes) until a key is added to `server/.env`.
 - **Supervisor dashboard** — aggregate view across ASHA workers for a PHC supervisor:
   filter by risk flag, visit type, date range.
 - **Persistent storage** — swap the in-memory `visitsStore` for SQLite/Postgres so data

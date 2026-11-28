@@ -38,9 +38,9 @@ submit.**
 
 - **Frontend**: React (Vite) — `client/`
 - **Backend**: Express — `server/`
-- **Structured extraction**: Anthropic Claude (tool-use for guaranteed JSON output).
-  Runs in a clearly-labeled **mock mode** (echoes the transcript into Notes, no auto-fill)
-  until an `ANTHROPIC_API_KEY` is set — the rest of the app is fully testable without one.
+- **Structured extraction**: Google Gemini (structured JSON output via `responseSchema`).
+  Runs in a clearly-labeled **mock mode** (sample data, with the transcript in Notes)
+  until a `GEMINI_API_KEY` is set — the rest of the app is fully testable without one.
 - **Storage**: in-memory for now (see [BACKLOG.md](./BACKLOG.md))
 
 ## Project structure
@@ -56,7 +56,7 @@ server/   Express API (extraction, risk flags, visit storage)
 npm run install:all     # installs client + server dependencies
 ```
 
-Copy `server/.env.example` to `server/.env` and fill in `ANTHROPIC_API_KEY` to enable
+Copy `server/.env.example` to `server/.env` and fill in `GEMINI_API_KEY` to enable
 real structured extraction (optional — leave blank to run in mock mode).
 
 ## Running locally

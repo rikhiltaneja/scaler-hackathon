@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { fetchVisits } from '../api/visits';
 import type { VisitRecord } from '../types';
 
@@ -31,13 +32,15 @@ export default function VisitHistory({ refreshKey }: VisitHistoryProps) {
     <ul className="visit-list">
       {visits.map((v) => (
         <li key={v.id} className="visit-item">
-          <div className="visit-item-header">
-            <strong>{v.patientName || 'Unnamed patient'}</strong>
-            <span className="muted">
-              {v.visitType || '—'} · {new Date(v.createdAt).toLocaleString()}
-            </span>
-          </div>
-          {v.notes && <p className="muted">{v.notes}</p>}
+          <Link to={`/visits/${v.id}`} className="visit-item-link">
+            <div className="visit-item-header">
+              <strong>{v.patientName || 'Unnamed patient'}</strong>
+              <span className="muted">
+                {v.visitType || '—'} · {new Date(v.createdAt).toLocaleString()}
+              </span>
+            </div>
+            {v.notes && <p className="muted">{v.notes}</p>}
+          </Link>
         </li>
       ))}
     </ul>

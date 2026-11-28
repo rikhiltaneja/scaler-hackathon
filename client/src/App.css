@@ -4,6 +4,11 @@
   padding: 24px 16px 48px;
 }
 
+.app-title-link {
+  color: inherit;
+  text-decoration: none;
+}
+
 .app-header h1 {
   margin: 0 0 4px;
   font-size: 1.6rem;
@@ -30,6 +35,19 @@
 .panel h2 {
   margin: 0 0 14px;
   font-size: 1.05rem;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 14px;
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
 }
 
 /* Voice input */
@@ -139,13 +157,18 @@
 
 .field input,
 .field select,
-.field textarea {
+.field textarea,
+.field-value {
   padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text);
   font-size: 0.95rem;
+}
+
+.field-value--block {
+  white-space: pre-wrap;
 }
 
 .tag-input {
@@ -238,11 +261,22 @@
 .visit-item {
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 12px;
+  overflow: hidden;
 }
 
 .visit-item.risk {
   border-color: var(--danger-text);
+}
+
+.visit-item-link {
+  display: block;
+  padding: 12px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.visit-item-link:hover {
+  background: var(--bg);
 }
 
 .visit-item-header {
