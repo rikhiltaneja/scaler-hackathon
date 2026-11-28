@@ -1,0 +1,24 @@
+{
+  "name": "sahayika-voice-intake",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Voice-first home-visit intake for ASHA workers — Scaler x Wispr Flow hackathon",
+  "workspaces": [
+    "shared",
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "install:all": "npm install && npm run build:shared",
+    "build:shared": "npm run build --prefix shared",
+    "dev:shared": "npm run dev --prefix shared",
+    "dev:client": "npm run dev --prefix client",
+    "dev:server": "npm run dev --prefix server",
+    "dev": "concurrently -n shared,client,server -c yellow,blue,green \"npm:dev:shared\" \"npm:dev:client\" \"npm:dev:server\"",
+    "build:server": "npm run build --prefix server",
+    "build": "npm run build:shared && npm run build --prefix client && npm run build:server"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.7"
+  }
+}
