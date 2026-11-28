@@ -1,5 +1,5 @@
 import type { VisitFields } from 'shared';
-import type { ExtractedVisit, VisitRecord } from '../types';
+import type { ExtractedVisit, VisitLocation, VisitRecord } from '../types';
 
 const BASE = '/api/visits';
 
@@ -25,7 +25,8 @@ export function extractVisit(
 export function submitVisit(payload: {
   transcript: string;
   language: string;
-  extracted: VisitFields;
+  location?: VisitLocation | null;
+  extracted: VisitFields & { completenessTip?: string };
 }): Promise<VisitRecord> {
   return fetch(BASE, {
     method: 'POST',

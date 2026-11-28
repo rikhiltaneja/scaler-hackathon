@@ -81,6 +81,15 @@ export const VISIT_RESPONSE_SCHEMA: Schema = {
       type: Type.STRING,
       description: 'Any other relevant free-text detail not captured by the fields above.',
     },
+    completenessTip: {
+      type: Type.STRING,
+      description:
+        "Assessment of whether the transcript gave enough detail to usefully fill the fields " +
+        'above. If key information is missing or the transcript is too short/vague (e.g. no ' +
+        'patient name, no vitals, unclear visit type), write a short, actionable tip for the ' +
+        'health worker — what to re-record or fill in manually, now or later. Leave this as an ' +
+        'empty string if the information captured is reasonably sufficient.',
+    },
   },
-  required: ['patientName', 'visitType', 'symptoms', 'medicationsGiven', 'notes'],
+  required: ['patientName', 'visitType', 'symptoms', 'medicationsGiven', 'notes', 'completenessTip'],
 };
